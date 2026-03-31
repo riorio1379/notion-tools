@@ -108,9 +108,8 @@ def open_notion(url=None):
     """Notionアプリを起動"""
     try:
         if url:
-            # notion://URLで直接ページを開く
             notion_url = url.replace("https://www.notion.so/", "notion://www.notion.so/")
-            subprocess.Popen(["open", notion_url])
+            subprocess.Popen(["open", "-a", "Notion", notion_url])
         else:
             subprocess.Popen(["open", "-a", "Notion"])
         print("Notionアプリを起動しました")

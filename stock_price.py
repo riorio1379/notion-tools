@@ -21,11 +21,11 @@ HEADERS = {
 }
 
 HOLDINGS = {
-    "CRCL":  {"name": "Circle",        "shares": 43.40, "avg_gbp": 129.15},
-    "NVDA":  {"name": "Nvidia",        "shares": 0,     "avg_gbp": 0},
-    "CRWV":  {"name": "CoreWeave",     "shares": 0,     "avg_gbp": 0},
-    "BYDDY": {"name": "BYD ADR",       "shares": 0,     "avg_gbp": 0},
-    "NTDOY": {"name": "Nintendo ADR",  "shares": 0,     "avg_gbp": 0},
+    "CRCL":  {"name": "Circle",        "shares": 0,           "avg_gbp": 129.15},
+    "NVDA":  {"name": "Nvidia",        "shares": 11.86352324, "avg_gbp": 0},
+    "CRWV":  {"name": "CoreWeave",     "shares": 8.0,         "avg_gbp": 0},
+    "BYDDY": {"name": "BYD ADR",       "shares": 36.0,        "avg_gbp": 0},
+    "NTDOY": {"name": "Nintendo ADR",  "shares": 21.0,        "avg_gbp": 0},
 }
 
 GBP_USD = 1.29  # 手動更新 or 自動取得で更新

@@ -104,6 +104,64 @@ def create_notion_page(date_str, blocks):
     return result["url"]
 
 
+def get_child_pages():
+    """HOME_PAGE_IDの子ページ一覧を取得"""
+    pages = []
+    cursor = None
+    while True:
+        url = f"https://api.notion.com/v1/blocks/{HOME_PAGE_ID}/children"
+        if cursor:
+            url += f"?start_cursor={cursor}"
+        req = urllib.request.Request(url, headers=HEADERS, method="GET")
+        with urllib.request.urlopen(req) as r:
+            result = json.loads(r.read())
+        for block in result.get("results", []):
+            if block.get("type") == "child_page":
+                pages.append(block)
+        if not result.get("has_more"):
+            break
+        cursor = result.get("next_cursor")
+    return pages
+
+
+def archive_page(page_id):
+    """Notionページをアーカイブ（削除）"""
+    payload = json.dumps({"archived": True}).encode("utf-8")
+    req = urllib.request.Request(
+        f"https://api.notion.com/v1/pages/{page_id}",
+        data=payload, headers=HEADERS, method="PATCH"
+    )
+    with urllib.request.urlopen(req) as r:
+        return json.loads(r.read())
+
+
+def cleanup_old_todo_pages(keep_days=2):
+    """直近keep_days日分以外のTODOページを削除"""
+    from datetime import timedelta
+    today = datetime.now().date()
+    cutoff = today - timedelta(days=keep_days - 1)  # keep_days日前より古いものを削除
+
+    pages = get_child_pages()
+    deleted = []
+    for page in pages:
+        title = page.get("child_page", {}).get("title", "")
+        # "📅 2026年04月01日 TODO" 形式を解析
+        m = re.search(r"(\d{4})年(\d{2})月(\d{2})日", title)
+        if not m:
+            continue
+        page_date_str = f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+        try:
+            page_date = datetime.strptime(page_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        if page_date < cutoff:
+            archive_page(page["id"])
+            deleted.append(page_date_str)
+
+    if deleted:
+        print(f"古いTODOページを削除: {', '.join(deleted)}")
+
+
 def open_notion(url=None):
     """Notionアプリを起動"""
     try:
@@ -129,6 +187,7 @@ def run():
     blocks = md_to_blocks(section)
     url = create_notion_page(date_str, blocks)
     print(f"Notion同期完了: {url}")
+    cleanup_old_todo_pages(keep_days=2)
     open_notion(url)
     return url
 

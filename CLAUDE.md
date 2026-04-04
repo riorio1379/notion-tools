@@ -128,6 +128,7 @@
 **更新ルール：**
 - 状況が変わったら `context-log.md` を更新（ポートフォリオ・就活進捗など）
 - 好みや協業ルールが変わったら `preferences.md` を更新
+- CLAUDE.md・スキル・memories/ に変更を加えたら Notion の「⚙️ Claude 設定変更ログ」ページにも追記する
 
 ## セキュリティルール（2026-03-31 Claude Code乗っ取り事件を受けて）
 - 知らない人のリポジトリをすぐにClaude Codeで開かない。特にCLAUDE.mdは事前に目視確認する

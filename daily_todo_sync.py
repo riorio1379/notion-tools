@@ -17,15 +17,15 @@ HEADERS = {
     "Content-Type": "application/json",
     "Notion-Version": "2022-06-28"
 }
-TODO_PATH = os.path.expanduser("~/TODO.md")
+DAILY_PATH = os.path.expanduser("~/DAILY.md")
 
 
 def parse_today_todo():
-    """TODO.mdから今日のセクションを抽出"""
+    """DAILY.mdから今日のセクションを抽出"""
     today = datetime.now()
     date_str = today.strftime("%Y-%m-%d")
 
-    with open(TODO_PATH, "r", encoding="utf-8") as f:
+    with open(DAILY_PATH, "r", encoding="utf-8") as f:
         content = f.read()
 
     # 今日の日付を含むセクションを探す

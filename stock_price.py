@@ -47,17 +47,26 @@ def fetch_gbp_usd():
 def fetch_prices():
     result = {}
     for ticker in HOLDINGS:
-        try:
-            t = yf.Ticker(ticker)
-            hist = t.history(period="2d")
-            if not hist.empty:
-                price = round(hist["Close"].iloc[-1], 2)
-                prev  = round(hist["Close"].iloc[-2], 2) if len(hist) > 1 else price
-                change_pct = round((price - prev) / prev * 100, 2)
-                result[ticker] = {"price": price, "change_pct": change_pct}
-                print(f"  {ticker}: ${price} ({'+' if change_pct >= 0 else ''}{change_pct}%)")
-        except Exception as e:
-            print(f"  {ticker}: 取得失敗 ({e})")
+        for attempt in range(3):
+            try:
+                t = yf.Ticker(ticker)
+                hist = t.history(period="2d")
+                if not hist.empty and len(hist) >= 1:
+                    close = hist["Close"]
+                    price = round(float(close.iloc[-1]), 2)
+                    prev  = round(float(close.iloc[-2]), 2) if len(hist) > 1 else price
+                    change_pct = round((price - prev) / prev * 100, 2)
+                    result[ticker] = {"price": price, "change_pct": change_pct}
+                    print(f"  {ticker}: ${price} ({'+' if change_pct >= 0 else ''}{change_pct}%)")
+                    break
+                else:
+                    if attempt < 2:
+                        import time; time.sleep(2)
+            except Exception as e:
+                if attempt == 2:
+                    print(f"  {ticker}: 取得失敗 ({e})")
+                else:
+                    import time; time.sleep(2)
     return result
 
 

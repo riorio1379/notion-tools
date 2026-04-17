@@ -13,6 +13,18 @@ Notion API scripts for personal productivity.
 python3 --version
 ```
 
+### Claude Code セットアップ（新マシン移行時）
+
+このリポジトリには `CLAUDE.md.template` が含まれています。
+新しいマシンでClaude Codeを使う際は、以下のコマンドで `~/CLAUDE.md` を復元してください。
+
+```bash
+cp ~/notion-tools/CLAUDE.md.template ~/CLAUDE.md
+```
+
+> `~/CLAUDE.md` はClaude Codeがすべてのプロジェクトで読み込むグローバル設定ファイルです。
+> このリポジトリの `CLAUDE.md.template` が最新の内容を管理しています。
+
 ## Usage
 
 ### trade_journal.py

@@ -23,7 +23,7 @@ NOTION_HEADERS = {
 
 HOLDINGS = {
     "NVDA":  {"name": "Nvidia",       "shares": 26.86352324},
-    "CRWV":  {"name": "CoreWeave",    "shares": 8.0},
+    "CRWV":  {"name": "CoreWeave",    "shares": 5.0},
     "BYDDY": {"name": "BYD ADR",      "shares": 36.0},
     "NTDOY": {"name": "Nintendo ADR", "shares": 21.0},
 }

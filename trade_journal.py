@@ -54,12 +54,12 @@ def create_trade_record(
     ]
 
     properties = {
-        "Name": {"title": [{"text": {"content": title}}]},
+        "銘柄名": {"title": [{"text": {"content": title}}]},
     }
     if ticker:
         properties["ティッカー"] = {"rich_text": [{"text": {"content": ticker}}]}
     if sector:
-        properties["セクター"] = {"rich_text": [{"text": {"content": sector}}]}
+        properties["セクター"] = {"select": {"name": sector}}
 
     payload = {
         "parent": {"database_id": DB_ID},

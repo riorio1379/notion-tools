@@ -1,14 +1,16 @@
 """
 daily_todo_sync.py
 TODO.md の今日のセクションをNotionに同期し、Notionアプリを起動する
+--reverse-sync [YYYY-MM-DD]: NotionのチェックをDAILY.mdに反映（デフォルト: 昨日）
 """
 
 import json
 import os
 import re
 import subprocess
+import sys
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta
 
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
 HOME_PAGE_ID = "327972dc-26e6-8010-bd24-cd5d20bbb4c1"
@@ -124,6 +126,24 @@ def get_child_pages():
     return pages
 
 
+def get_page_blocks(page_id):
+    """Notionページのブロック一覧を取得"""
+    blocks = []
+    cursor = None
+    while True:
+        url = f"https://api.notion.com/v1/blocks/{page_id}/children"
+        if cursor:
+            url += f"?start_cursor={cursor}"
+        req = urllib.request.Request(url, headers=HEADERS, method="GET")
+        with urllib.request.urlopen(req) as r:
+            result = json.loads(r.read())
+        blocks.extend(result.get("results", []))
+        if not result.get("has_more"):
+            break
+        cursor = result.get("next_cursor")
+    return blocks
+
+
 def archive_page(page_id):
     """Notionページをアーカイブ（削除）"""
     payload = json.dumps({"archived": True}).encode("utf-8")
@@ -137,7 +157,6 @@ def archive_page(page_id):
 
 def cleanup_old_todo_pages(keep_days=2):
     """直近keep_days日分以外のTODOページを削除"""
-    from datetime import timedelta
     today = datetime.now().date()
     cutoff = today - timedelta(days=keep_days - 1)  # keep_days日前より古いものを削除
 
@@ -162,6 +181,81 @@ def cleanup_old_todo_pages(keep_days=2):
         print(f"古いTODOページを削除: {', '.join(deleted)}")
 
 
+def reverse_sync_from_notion(date_str=None):
+    """NotionのチェックをDAILY.mdに反映する（逆同期）
+
+    Notionでチェックされたto_doアイテムをDAILY.mdの対応日付セクションに反映する。
+    朝のルーティン前に呼び出すと、Notionでチェックした項目が翌日に持ち越されなくなる。
+    """
+    if not date_str:
+        date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    # 日付からNotionページタイトルを生成
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    title_search = dt.strftime("%Y年%m月%d日")
+
+    # 子ページから対象日のページを探す
+    pages = get_child_pages()
+    target_page = None
+    for page in pages:
+        title = page.get("child_page", {}).get("title", "")
+        if title_search in title:
+            target_page = page
+            break
+
+    if not target_page:
+        print(f"Notionページが見つかりません: {title_search}（スキップ）")
+        return False
+
+    # ブロックを取得してチェック済みテキストを収集
+    blocks = get_page_blocks(target_page["id"])
+    checked_texts = set()
+    for block in blocks:
+        if block.get("type") == "to_do":
+            todo = block.get("to_do", {})
+            if todo.get("checked"):
+                rich_text = todo.get("rich_text", [])
+                text = "".join(t.get("text", {}).get("content", "") for t in rich_text)
+                if text:
+                    checked_texts.add(text.strip())
+
+    if not checked_texts:
+        print(f"{date_str}: Notionにチェック済みTODOなし（スキップ）")
+        return True
+
+    # DAILY.mdを更新：対象セクション内のチェックボックスを反映
+    with open(DAILY_PATH, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    pattern = rf"(## {date_str}.*?)(?=\n## |\Z)"
+    section_match = re.search(pattern, content, re.DOTALL)
+    if not section_match:
+        print(f"{date_str}: DAILY.mdにセクションが見つかりません（スキップ）")
+        return False
+
+    section = section_match.group(0)
+
+    def replace_checkbox(m):
+        bracket = m.group(1)  # ' ' or 'x'
+        text = m.group(2).strip()
+        if bracket == " " and text in checked_texts:
+            return f"- [x] {text}"
+        return m.group(0)
+
+    new_section = re.sub(r"- \[([ x])\] (.+)", replace_checkbox, section)
+    updated_count = new_section.count("[x]") - section.count("[x]")
+
+    if updated_count > 0:
+        new_content = content[:section_match.start()] + new_section + content[section_match.end():]
+        with open(DAILY_PATH, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        print(f"{date_str}: DAILY.mdにNotion完了済みTODOを反映（{updated_count}件 → チェック済みに更新）")
+    else:
+        print(f"{date_str}: 新たに反映するTODOなし")
+
+    return True
+
+
 def open_notion(url=None):
     """Notionアプリを起動"""
     try:
@@ -177,6 +271,11 @@ def open_notion(url=None):
 
 def run():
     print("=== TODO → Notion 同期中 ===")
+
+    # まず昨日のNotionチェック状態をDAILY.mdに反映
+    yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    reverse_sync_from_notion(yesterday)
+
     section, date_str = parse_today_todo()
 
     if not section:
@@ -193,4 +292,10 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    # --reverse-sync [YYYY-MM-DD] で任意の日付の逆同期を実行
+    if len(sys.argv) >= 2 and sys.argv[1] == "--reverse-sync":
+        date_arg = sys.argv[2] if len(sys.argv) >= 3 else None
+        print("=== Notion → DAILY.md 逆同期 ===")
+        reverse_sync_from_notion(date_arg)
+    else:
+        run()

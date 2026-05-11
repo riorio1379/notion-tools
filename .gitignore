@@ -3,3 +3,12 @@
 *.pyc
 __pycache__/
 .DS_Store
+
+# 機密ファイル
+client_secret*.json
+*credentials*.json
+token.json
+
+# 個人情報を含むファイル
+リクルート*.json
+*面接*.json

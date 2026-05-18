@@ -21,11 +21,17 @@ NOTION_HEADERS = {
     "Notion-Version": "2022-06-28"
 }
 
-HOLDINGS = {
-    "NVDA":  {"name": "Nvidia",       "shares": 26.86352324},
-    "BYDDY": {"name": "BYD ADR",      "shares": 36.0},
-    "NTDOY": {"name": "Nintendo ADR", "shares": 21.0},
-}
+HOLDINGS_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "holdings.json")
+
+
+def _load_holdings():
+    with open(HOLDINGS_JSON_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return {ticker: {"name": info["name"], "shares": info["shares"]}
+            for ticker, info in data["holdings"].items()}
+
+
+HOLDINGS = _load_holdings()
 
 GBP_USD_FALLBACK = 1.29
 TWELVE_DATA_BASE = "https://api.twelvedata.com"

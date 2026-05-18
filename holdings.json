@@ -1,0 +1,41 @@
+{
+  "_comment": "Single Source of Truth for portfolio state. Updated by sync_portfolio_state.py. Never edit by hand unless you know what you are doing.",
+  "last_updated": "2026-05-15",
+  "last_trade_ref": "2026-05-15｜NVDA 10株売却 約定（$235.42・£1,736.19獲得）",
+  "holdings": {
+    "NVDA": {
+      "name": "Nvidia",
+      "shares": 16.86352324
+    },
+    "BYDDY": {
+      "name": "BYD ADR",
+      "shares": 36.0
+    },
+    "NTDOY": {
+      "name": "Nintendo ADR",
+      "shares": 21.0
+    }
+  },
+  "cash": {
+    "freetrade_gbp": 6135.0,
+    "monzo_isa_gbp": 2942.0,
+    "mizuho_jpy_oku": 150
+  },
+  "open_orders": [],
+  "closed_positions_log": [
+    {
+      "ticker": "CRCL",
+      "closed_date": "2026-03-25",
+      "shares": 43.4,
+      "realized_pnl_gbp": -1786,
+      "note": "逆指値$118発動・CLARITY法草案でCRCL -20%急落"
+    },
+    {
+      "ticker": "CRWV",
+      "closed_date": "2026-04-27",
+      "shares": 5,
+      "realized_pnl_gbp": null,
+      "note": "逆指値$110発動・$119.66で約定・5株全株売却"
+    }
+  ]
+}

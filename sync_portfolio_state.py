@@ -31,7 +31,7 @@ from datetime import datetime
 # ====== 定数・パス ======
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 HOLDINGS_JSON_PATH = os.path.join(SCRIPT_DIR, "holdings.json")
-MEMORY_02_PATH = os.path.expanduser("~/00_Important_Context/memories/02_現状_就活と投資の最新状況.md")
+MEMORY_02_PATH = os.path.expanduser("~/RIO/Memory/02_現状_就活と投資の最新状況.md")
 
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
 TWELVE_DATA_API_KEY = os.environ.get("TWELVE_DATA_API_KEY", "")

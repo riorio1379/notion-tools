@@ -12,3 +12,6 @@ token.json
 # 個人情報を含むファイル
 リクルート*.json
 *面接*.json
+
+# Local VSCode workspace settings
+.vscode/

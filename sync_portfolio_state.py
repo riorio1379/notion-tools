@@ -158,7 +158,7 @@ def render_portfolio_section(holdings_data, prices, gbp_usd, today):
     section = f"""## 投資ポートフォリオ（最新）
 
 > ⚙️ このセクションは `sync_portfolio_state.py` が自動生成しています。手で編集しないでください（次回sync時に上書きされます）。
-> ソース：[holdings.json](../../automation/holdings.json) / 直近の売買：{last_trade}
+> ソース：[holdings.json](../automation/holdings.json) / 直近の売買：{last_trade}
 
 ### 保有銘柄・株数（{today}時点・ライブ価格）
 | 銘柄 | 株数 | 直近株価 | 評価額(£) |

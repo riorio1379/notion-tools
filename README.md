@@ -2,7 +2,7 @@
 
 Personal automation scripts for Notion・portfolio management・daily routines.
 
-GitHub repo name は歴史的経緯で `notion-tools` のままです（ローカルのフォルダ名は `automation/` に統一済み）。
+GitHub repo name は歴史的経緯で `notion-tools` のままです（ローカルパスは `~/RIO/automation/` に統合済み）。
 
 ## Scripts
 
@@ -37,7 +37,7 @@ export TWELVE_DATA_API_KEY="..."
 ### 日次株価記録（朝のルーティンで自動実行）
 
 ```bash
-python3 ~/automation/stock_price.py
+python3 ~/RIO/automation/stock_price.py
 ```
 
 保有銘柄は `holdings.json` から読み込まれます。
@@ -45,7 +45,7 @@ python3 ~/automation/stock_price.py
 ### 売買約定時の同期（4箇所を1コマンドで）
 
 ```bash
-python3 ~/automation/sync_portfolio_state.py --record-trade \
+python3 ~/RIO/automation/sync_portfolio_state.py --record-trade \
   --ticker NVDA --action SELL --shares 10 --price 235.42 \
   --cash-delta-gbp +1736.19 --note "決算前PARTIAL SELL"
 ```
@@ -58,7 +58,7 @@ python3 ~/automation/sync_portfolio_state.py --record-trade \
 ### 株価のみ最新化（売買なし）
 
 ```bash
-python3 ~/automation/sync_portfolio_state.py
+python3 ~/RIO/automation/sync_portfolio_state.py
 ```
 
 ## 設計思想
